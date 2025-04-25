@@ -5,30 +5,60 @@ let playlist = [];
 
 function loadCSV() {
     console.log('Starting loadCSV');
-    // Thay <repository> bằng tên repository thực tế của bạn
-    fetch('https://raw.githubusercontent.com/lehunghup/meoo/main/data.csv')
+    // Thay <repository> bằng tên repository thực tế, ví dụ: media-player
+    const csvUrl = 'https://raw.githubusercontent.com/lehunghup/meoo/main/data.csv';
+    fetch(csvUrl)
         .then(response => {
-            if (!response.ok) throw new Error('Failed to load CSV');
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
             return response.text();
         })
         .then(data => {
-            console.log('CSV data:', data);
+            console.log('Raw CSV data:', data);
+            if (!data.trim()) {
+                throw new Error('CSV file is empty');
+            }
             mediaData = parseCSV(data);
             console.log('Parsed mediaData:', mediaData);
+            if (mediaData.length === 0) {
+                throw new Error('No valid data parsed from CSV');
+            }
             renderMedia();
         })
         .catch(error => {
             console.error('Error loading CSV:', error);
-            document.getElementById('mediaContainer').innerHTML = '<p>Failed to load media data.</p>';
+            const container = document.getElementById('mediaContainer');
+            if (container) {
+                container.innerHTML = `<p>Failed to load media data: ${error.message}. Please check the CSV URL or file content.</p>`;
+            }
         });
 }
 
 function parseCSV(csvText) {
-    const rows = csvText.trim().split('\n').slice(1);
-    return rows.map(row => {
-        const [id, title, url, thumbnail, size_formatted] = row.split(',');
-        return { id, title, url, thumbnail, size_formatted };
-    });
+    try {
+        const rows = csvText.trim().split('\n').slice(1); // Bỏ dòng tiêu đề
+        const result = rows
+            .map((row, index) => {
+                // Phân tách cẩn thận để xử lý dấu phẩy trong title
+                const cols = row.split(',').map(item => item.trim());
+                if (cols.length < 19) {
+                    console.warn(`Invalid row at index ${index + 1}: ${row}`);
+                    return null;
+                }
+                const [id, , , , , , , , , , thumb, title, url, , , , , , size_formatted] = cols;
+                if (!id || !title || !url || !thumb || !size_formatted) {
+                    console.warn(`Missing required fields in row ${index + 1}: ${row}`);
+                    return null;
+                }
+                return { id, title, url, thumb, size_formatted };
+            })
+            .filter(item => item !== null);
+        return result;
+    } catch (error) {
+        console.error('Error parsing CSV:', error);
+        return [];
+    }
 }
 
 function renderMedia() {
@@ -47,9 +77,9 @@ function renderMedia() {
         const thumbnail = document.createElement('div');
         thumbnail.className = 'thumbnail';
         thumbnail.innerHTML = `
-            <img src="${item.thumbnail}" alt="${item.title}">
+            <img src="${item.thumb}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/150';">
             <p>${item.title}</p>
-            ${viewedItems.has(item.id) ? '<span>✔ Viewed</span>' : ''}
+            ${viewedItems.has(item.id) ? '<span style="color: green;">✔ Viewed</span>' : ''}
         `;
         thumbnail.onclick = () => handleThumbnailClick(index);
         container.appendChild(thumbnail);
@@ -82,7 +112,7 @@ function playVideo(url, title, id, index) {
     video.onerror = (error) => {
         if (video.src && !video.paused && video.currentSrc !== '') {
             console.error(`Failed to load video: ${url}`, error);
-            playNextVideo(); // Thử video tiếp theo thay vì đóng modal
+            playNextVideo();
         } else {
             console.log(`Video load ignored: ${url}`);
             closeModal();
