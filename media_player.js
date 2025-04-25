@@ -6,7 +6,7 @@ let playlist = [];
 function loadCSV() {
     console.log('Starting loadCSV');
     // Thay <repository> bằng tên repository thực tế của bạn
-    fetch('https://raw.githubusercontent.com/lehunghup/meoo/main/videos.csv')
+    fetch('https://raw.githubusercontent.com/lehunghup/meoo/main/data.csv')
         .then(response => {
             if (!response.ok) throw new Error('Failed to load CSV');
             return response.text();
