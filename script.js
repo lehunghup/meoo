@@ -5,7 +5,7 @@ let playlist = [];
 
 function loadCSV() {
     console.log('Starting loadCSV');
-    fetch('https://raw.githubusercontent.com/lehunghup/repository/main/data.csv')
+    fetch('https://raw.githubusercontent.com/lehunghup/meoo/main/data.csv')
         .then(response => {
             if (!response.ok) throw new Error('Failed to load CSV');
             return response.text();
