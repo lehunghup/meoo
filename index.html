@@ -15,19 +15,19 @@
     .video-container {
       position: relative;
       width: 100vw;
-      height: 100vh;
+      height: 90vh; /* Reduced height to avoid navigation bar overlap */
       display: flex;
       justify-content: center;
       align-items: center;
     }
     video {
       width: 100%;
-      height: 100%;
+      max-height: 90vh; /* Ensure video doesn't exceed container height */
       object-fit: contain;
     }
     .controls {
       position: absolute;
-      bottom: 20px;
+      bottom: 30px; /* Moved controls higher to avoid overlap */
       width: 100%;
       display: flex;
       justify-content: space-between;
@@ -35,6 +35,7 @@
       box-sizing: border-box;
       color: white;
       opacity: 0.8;
+      z-index: 10; /* Ensure controls are above video */
     }
     .controls button {
       background: rgba(0, 0, 0, 0.5);
@@ -58,6 +59,7 @@
       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
       max-width: 80%;
       word-wrap: break-word;
+      z-index: 10; /* Ensure title is above video */
     }
     .loading {
       position: absolute;
@@ -66,6 +68,7 @@
       transform: translate(-50%, -50%);
       color: white;
       font-size: 24px;
+      z-index: 10; /* Ensure loading text is above video */
     }
   </style>
 </head>
