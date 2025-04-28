@@ -27,7 +27,7 @@
     }
     .controls {
       position: absolute;
-      bottom: 50px; /* Moved controls higher to avoid overlap */
+      top: 50px; /* Đặt controls ở phía trên */
       width: 100%;
       display: flex;
       justify-content: space-between;
@@ -74,15 +74,15 @@
 </head>
 <body>
   <div class="video-container">
+    <div class="controls">
+      <button onclick="prevVideo()">Previous</button>
+      <button onclick="nextVideo()">Next</button>
+    </div>
     <video id="videoPlayer" controls autoplay>
       <source src="" type="video/mp4">
       Your browser does not support the video tag.
     </video>
     <div class="video-title" id="videoTitle"></div>
-    <div class="controls">
-      <button onclick="prevVideo()">Previous</button>
-      <button onclick="nextVideo()">Next</button>
-    </div>
     <div class="loading" id="loading">Đang tải...</div>
   </div>
 
