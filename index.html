@@ -63,10 +63,13 @@
       }
       .speed-controls {
         position: absolute;
-        top: 60px;
+        top: 50%;
         left: 20px;
+        transform: translateY(-50%);
         display: flex;
+        flex-direction: column;
         gap: 10px;
+        align-items: flex-start;
         z-index: 5;
       }
       .speed-controls button {
@@ -82,6 +85,43 @@
         background: rgba(0, 0, 0, 0.8);
       }
       .speed-controls button.active {
+        background: rgba(255, 255, 255, 0.3);
+      }
+      .speed-controls .skip-button {
+        font-size: 16px;
+        padding: 20px 20px;
+        border-radius: 12px;
+      }
+      .speed-controls .gear-button {
+        font-size: 18px;
+        padding: 8px 12px;
+        border-radius: 8px;
+      }
+      .speed-menu {
+        display: none;
+        flex-direction: column;
+        gap: 10px;
+        background: rgba(0, 0, 0, 0.7);
+        padding: 10px;
+        border-radius: 8px;
+        margin-top: 10px;
+      }
+      .speed-menu.show {
+        display: flex;
+      }
+      .speed-menu button {
+        background: rgba(0, 0, 0, 0.5);
+        border: none;
+        color: white;
+        padding: 8px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      .speed-menu button:hover {
+        background: rgba(0, 0, 0, 0.8);
+      }
+      .speed-menu button.active {
         background: rgba(255, 255, 255, 0.3);
       }
       .loading {
@@ -107,12 +147,16 @@
     </video>
     <div class="video-title" id="videoTitle"></div>
     <div class="speed-controls" id="speedControls">
-      <button onclick="setPlaybackSpeed(1.5)">x1.5</button>
-      <button onclick="setPlaybackSpeed(2)">x2</button>
-      <button onclick="setPlaybackSpeed(3)">x3</button>
       <button onclick="setPlaybackSpeed(4)">x4</button>
-      <button onclick="setPlaybackSpeed(6)">x6</button>
-      <button onclick="setPlaybackSpeed(8)">x8</button>
+      <button class="skip-button" onclick="skipForward()">+10s</button>
+      <button onclick="setPlaybackSpeed(1.5)">x1.5</button>
+      <button class="gear-button" onclick="toggleSpeedMenu()">⚙️</button>
+      <div class="speed-menu" id="speedMenu">
+        <button onclick="setPlaybackSpeed(2)">x2</button>
+        <button onclick="setPlaybackSpeed(3)">x3</button>
+        <button onclick="setPlaybackSpeed(6)">x6</button>
+        <button onclick="setPlaybackSpeed(8)">x8</button>
+      </div>
     </div>
     <div class="loading" id="loading">Đang tải...</div>
   </div>
@@ -123,7 +167,8 @@
     const videoPlayer = document.getElementById("videoPlayer");
     const videoTitle = document.getElementById("videoTitle");
     const loading = document.getElementById("loading");
-    const speedButtons = document.querySelectorAll(".speed-controls button");
+    const speedButtons = document.querySelectorAll(".speed-controls button:not(.skip-button):not(.gear-button), .speed-menu button");
+    const speedMenu = document.getElementById("speedMenu");
 
     // Hàm parse CSV thành mảng đối tượng
     function parseCSV(csvText) {
@@ -167,16 +212,36 @@
       return savedSpeed !== null ? parseFloat(savedSpeed) : 1;
     }
 
+    // Hàm hiển thị/ẩn menu tốc độ
+    function toggleSpeedMenu() {
+      speedMenu.classList.toggle('show');
+    }
+
     // Hàm thiết lập tốc độ phát
     function setPlaybackSpeed(speed) {
-      videoPlayer.playbackRate = speed;
-      savePlaybackSpeed(speed);
-      speedButtons.forEach(button => {
-        button.classList.remove('active');
-        if (button.textContent === `x${speed}`) {
-          button.classList.add('active');
-        }
-      });
+      if (videoPlayer.playbackRate === speed) {
+        // Nếu nhấn lại vào tốc độ đang chọn, quay về 1x
+        videoPlayer.playbackRate = 1;
+        savePlaybackSpeed(1);
+        speedButtons.forEach(button => button.classList.remove('active'));
+      } else {
+        // Đặt tốc độ mới
+        videoPlayer.playbackRate = speed;
+        savePlaybackSpeed(speed);
+        speedButtons.forEach(button => {
+          button.classList.remove('active');
+          if (button.textContent === `x${speed}`) {
+            button.classList.add('active');
+          }
+        });
+      }
+      // Ẩn menu tốc độ sau khi chọn
+      speedMenu.classList.remove('show');
+    }
+
+    // Hàm tua nhanh 10 giây
+    function skipForward() {
+      videoPlayer.currentTime += 10;
     }
 
     // Hàm phát video hiện tại
@@ -258,7 +323,7 @@
       nextVideo();
     });
 
-    // Tùy chọn: Cuộn để chuyển video (gi�似 TikTok)
+    // Tùy chọn: Cuộn để chuyển video (giống TikTok)
     let touchStartY = 0;
     window.addEventListener('touchstart', (e) => {
       touchStartY = e.touches[0].clientY;
