@@ -1,76 +1,99 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Video Player</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      background: #000;
-      font-family: Arial, sans-serif;
-    }
-    .video-container {
-      position: relative;
-      width: 100vw;
-      height: 86vh; /* Reduced height to avoid navigation bar overlap */
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    video {
-      width: 98%;
-      max-height: 85vh; /* Ensure video doesn't exceed container height */
-      object-fit: contain;
-    }
-    .controls {
-      position: absolute;
-      top: 10px; /* Đặt controls ở phía trên */
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      padding: 0 50px;
-      box-sizing: border-box;
-      color: white;
-      opacity: 0.5;
-      z-index: 10; /* Ensure controls are above video */
-    }
-    .controls button {
-      background: rgba(0, 0, 0, 0);
-      border: none;
-      color: white;
-      padding: 0px 0px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 0px;
-    }
-    .controls button:hover {
-      background: rgba(0, 0, 0, 0);
-    }
-    .video-title {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      color: white;
-      font-size: 18px;
-      font-weight: bold;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-      max-width: 80%;
-      word-wrap: break-word;
-      z-index: 10; /* Ensure title is above video */
-    }
-    .loading {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      color: white;
-      font-size: 24px;
-      z-index: 10; /* Ensure loading text is above video */
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Player</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background: #000;
+        font-family: Arial, sans-serif;
+      }
+      .video-container {
+        position: relative;
+        width: 100vw;
+        height: 86vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      video {
+        width: 98%;
+        max-height: 85vh;
+        object-fit: contain;
+      }
+      .controls {
+        position: absolute;
+        top: 100px;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        padding: 0 20px;
+        box-sizing: border-box;
+        color: white;
+        opacity: 0.2;
+        z-index: 10;
+      }
+      .controls button {
+        background: rgba(0, 0, 0, 0.5);
+        border: none;
+        color: white;
+        padding: 10px 10px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      .controls button:hover {
+        background: rgba(0, 0, 0, 0);
+      }
+      .video-title {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        color: white;
+        font-size: 18px;
+        font-weight: bold;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        max-width: 80%;
+        word-wrap: break-word;
+        z-index: 5;
+      }
+      .speed-controls {
+        position: absolute;
+        top: 60px;
+        left: 20px;
+        display: flex;
+        gap: 10px;
+        z-index: 5;
+      }
+      .speed-controls button {
+        background: rgba(0, 0, 0, 0.5);
+        border: none;
+        color: white;
+        padding: 8px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      .speed-controls button:hover {
+        background: rgba(0, 0, 0, 0.8);
+      }
+      .speed-controls button.active {
+        background: rgba(255, 255, 255, 0.3);
+      }
+      .loading {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 24px;
+        z-index: 10;
+      }
+    </style>
 </head>
 <body>
   <div class="video-container">
@@ -78,11 +101,17 @@
       <button onclick="prevVideo()">Previous</button>
       <button onclick="nextVideo()">Next</button>
     </div>
-    <video id="videoPlayer" controls autoplay>
+    <video id="videoPlayer" controls autoplay muted>
       <source src="" type="video/mp4">
       Your browser does not support the video tag.
     </video>
     <div class="video-title" id="videoTitle"></div>
+    <div class="speed-controls" id="speedControls">
+      <button onclick="setPlaybackSpeed(2)">x2</button>
+      <button onclick="setPlaybackSpeed(4)">x4</button>
+      <button onclick="setPlaybackSpeed(6)">x6</button>
+      <button onclick="setPlaybackSpeed(8)">x8</button>
+    </div>
     <div class="loading" id="loading">Đang tải...</div>
   </div>
 
@@ -92,6 +121,7 @@
     const videoPlayer = document.getElementById("videoPlayer");
     const videoTitle = document.getElementById("videoTitle");
     const loading = document.getElementById("loading");
+    const speedButtons = document.querySelectorAll(".speed-controls button");
 
     // Hàm parse CSV thành mảng đối tượng
     function parseCSV(csvText) {
@@ -124,18 +154,56 @@
       return savedIndex !== null ? parseInt(savedIndex) : 0;
     }
 
+    // Hàm thiết lập tốc độ phát
+    function setPlaybackSpeed(speed) {
+      videoPlayer.playbackRate = speed;
+      speedButtons.forEach(button => {
+        button.classList.remove('active');
+        if (button.textContent === `x${speed}`) {
+          button.classList.add('active');
+        }
+      });
+    }
+
+    // Hàm phát video hiện tại
+    function playVideo(index) {
+      if (index >= 0 && index < videoList.length) {
+        videoPlayer.src = videoList[index].url;
+        videoPlayer.currentTime = 0;
+        videoTitle.textContent = videoList[index].title;
+        videoPlayer.playbackRate = 1; // Reset speed
+        speedButtons.forEach(button => button.classList.remove('active'));
+
+        // Attempt to play the video
+        const playPromise = videoPlayer.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(error => {
+            console.error('Autoplay failed:', error);
+            loading.textContent = 'Vui lòng nhấn vào video để phát';
+          });
+        }
+        currentVideoIndex = index;
+        saveVideoIndex(index);
+      }
+    }
+
     // Tải file CSV từ GitHub
     fetch('https://dl.dropboxusercontent.com/scl/fi/jrsp4wt51ldr118yhjkn8/data3.txt?rlkey=60ecaxtax6u07hploelllf8vi&st=uartdnkz&dl=0')
-      .then(response => response.text())
+      .then(response => {
+        if (!response.ok) throw new Error('Failed to load CSV');
+        return response.text();
+      })
       .then(data => {
         videoList = parseCSV(data);
         loading.style.display = 'none';
         if (videoList.length > 0) {
           currentVideoIndex = getLastVideoIndex();
           if (currentVideoIndex >= videoList.length) {
-            currentVideoIndex = 0; // Reset nếu chỉ số vượt quá danh sách
+            currentVideoIndex = 0;
           }
           playVideo(currentVideoIndex);
+        } else {
+          loading.textContent = 'Không tìm thấy video trong danh sách';
         }
       })
       .catch(error => {
@@ -143,24 +211,11 @@
         loading.textContent = 'Lỗi tải danh sách video';
       });
 
-    // Hàm phát video hiện tại
-    function playVideo(index) {
-      if (index >= 0 && index < videoList.length) {
-        videoPlayer.src = videoList[index].url;
-        videoPlayer.currentTime = 0; // Đặt thời gian về 0 để phát từ đầu
-        videoTitle.textContent = videoList[index].title;
-        videoPlayer.play();
-        currentVideoIndex = index;
-        saveVideoIndex(index); // Lưu chỉ số video vào localStorage
-      }
-    }
-
     // Chuyển đến video tiếp theo
     function nextVideo() {
       if (currentVideoIndex < videoList.length - 1) {
         playVideo(currentVideoIndex + 1);
       } else {
-        // Optional: Quay lại video đầu tiên nếu muốn lặp danh sách
         playVideo(0);
       }
     }
