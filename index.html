@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Video Player</title>
     <style>
       body {
@@ -10,7 +10,7 @@
         padding: 0;
         overflow: hidden;
         background: #000;
-        font-family: Arial, sans-serif;
+        font-family: Arial, sans-serif
       }
       .video-container {
         position: relative;
@@ -18,12 +18,12 @@
         height: 86vh;
         display: flex;
         justify-content: center;
-        align-items: center;
+        align-items: center
       }
       video {
         width: 98%;
         max-height: 85vh;
-        object-fit: contain;
+        object-fit: contain
       }
       .controls {
         position: absolute;
@@ -33,33 +33,33 @@
         justify-content: space-between;
         padding: 0 20px;
         box-sizing: border-box;
-        color: white;
-        opacity: 0.2;
-        z-index: 10;
+        color: #fff;
+        opacity: .2;
+        z-index: 10
       }
       .controls button {
-        background: rgba(0, 0, 0, 0.5);
+        background: rgba(0, 0, 0, .5);
         border: none;
-        color: white;
+        color: #fff;
         padding: 10px 10px;
         border-radius: 10px;
         cursor: pointer;
-        font-size: 14px;
+        font-size: 14px
       }
       .controls button:hover {
-        background: rgba(0, 0, 0, 0);
+        background: rgba(0, 0, 0, 0)
       }
       .video-title {
         position: absolute;
         top: 20px;
         left: 20px;
-        color: white;
+        color: #fff;
         font-size: 18px;
-        font-weight: bold;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        font-weight: 700;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, .7);
         max-width: 80%;
         word-wrap: break-word;
-        z-index: 5;
+        z-index: 5
       }
       .speed-controls {
         position: absolute;
@@ -70,68 +70,74 @@
         flex-direction: column;
         gap: 10px;
         align-items: flex-start;
-        z-index: 5;
+        z-index: 5
       }
       .speed-controls button {
-        background: rgba(0, 0, 0, 0.5);
+        background: rgba(0, 0, 0, .5);
         border: none;
-        color: white;
+        color: #fff;
         padding: 8px 12px;
         border-radius: 8px;
         cursor: pointer;
         font-size: 14px;
+        opacity: 0.3
       }
       .speed-controls button:hover {
-        background: rgba(0, 0, 0, 0.8);
+        background: rgba(0, 0, 0, .8);
+        opacity: 0.8
       }
       .speed-controls button.active {
-        background: rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, .3);
+        opacity: 0.8
       }
       .speed-controls .skip-button {
-        font-size: 16px;
-        padding: 20px 20px;
-        border-radius: 12px;
+        font-size: 18px;
+        padding: 35px 35px;
+        border-radius: 12px
       }
       .speed-controls .gear-button {
         font-size: 18px;
         padding: 8px 12px;
-        border-radius: 8px;
+        border-radius: 8px
       }
       .speed-menu {
         display: none;
         flex-direction: column;
         gap: 10px;
-        background: rgba(0, 0, 0, 0.7);
+        background: rgba(0, 0, 0, .7);
         padding: 10px;
         border-radius: 8px;
-        margin-top: 10px;
+        margin-top: 10px
       }
       .speed-menu.show {
-        display: flex;
+        display: flex
       }
       .speed-menu button {
-        background: rgba(0, 0, 0, 0.5);
+        background: rgba(0, 0, 0, .5);
         border: none;
-        color: white;
+        color: #fff;
         padding: 8px 12px;
         border-radius: 8px;
         cursor: pointer;
         font-size: 14px;
+        opacity: 0.3
       }
       .speed-menu button:hover {
-        background: rgba(0, 0, 0, 0.8);
+        background: rgba(0, 0, 0, .8);
+        opacity: 0.8
       }
       .speed-menu button.active {
-        background: rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, .3);
+        opacity: 0.8
       }
       .loading {
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        color: white;
+        color: #fff;
         font-size: 24px;
-        z-index: 10;
+        z-index: 10
       }
     </style>
 </head>
@@ -142,8 +148,7 @@
       <button onclick="nextVideo()">Next</button>
     </div>
     <video id="videoPlayer" controls autoplay muted>
-      <source src="" type="video/mp4">
-      Your browser does not support the video tag.
+      <source src="" type="video/mp4">Your browser does not support the video tag.
     </video>
     <div class="video-title" id="videoTitle"></div>
     <div class="speed-controls" id="speedControls">
@@ -160,7 +165,6 @@
     </div>
     <div class="loading" id="loading">Đang tải...</div>
   </div>
-
   <script>
     let videoList = [];
     let currentVideoIndex = 0;
@@ -169,7 +173,6 @@
     const loading = document.getElementById("loading");
     const speedButtons = document.querySelectorAll(".speed-controls button:not(.skip-button):not(.gear-button), .speed-menu button");
     const speedMenu = document.getElementById("speedMenu");
-
     // Hàm parse CSV thành mảng đối tượng
     function parseCSV(csvText) {
       const lines = csvText.trim().split('\n');
@@ -177,7 +180,6 @@
       const urlIndex = headers.indexOf('url');
       const titleIndex = headers.indexOf('title');
       const result = [];
-
       for (let i = 1; i < lines.length; i++) {
         const cols = lines[i].split(',').map(col => col.trim());
         if (cols[urlIndex] && cols[titleIndex]) {
@@ -189,34 +191,28 @@
       }
       return result;
     }
-
     // Hàm lưu chỉ số video hiện tại vào localStorage
     function saveVideoIndex(index) {
       localStorage.setItem('lastVideoIndex', index);
     }
-
     // Hàm lấy chỉ số video cuối cùng từ localStorage
     function getLastVideoIndex() {
       const savedIndex = localStorage.getItem('lastVideoIndex');
       return savedIndex !== null ? parseInt(savedIndex) : 0;
     }
-
     // Hàm lưu tốc độ phát vào localStorage
     function savePlaybackSpeed(speed) {
       localStorage.setItem('playbackSpeed', speed);
     }
-
     // Hàm lấy tốc độ phát từ localStorage
     function getSavedPlaybackSpeed() {
       const savedSpeed = localStorage.getItem('playbackSpeed');
       return savedSpeed !== null ? parseFloat(savedSpeed) : 1;
     }
-
     // Hàm hiển thị/ẩn menu tốc độ
     function toggleSpeedMenu() {
       speedMenu.classList.toggle('show');
     }
-
     // Hàm thiết lập tốc độ phát
     function setPlaybackSpeed(speed) {
       if (videoPlayer.playbackRate === speed) {
@@ -238,12 +234,10 @@
       // Ẩn menu tốc độ sau khi chọn
       speedMenu.classList.remove('show');
     }
-
     // Hàm tua nhanh 10 giây
     function skipForward() {
       videoPlayer.currentTime += 10;
     }
-
     // Hàm phát video hiện tại
     function playVideo(index) {
       if (index >= 0 && index < videoList.length) {
@@ -252,21 +246,17 @@
         videoTitle.textContent = videoList[index].title;
         currentVideoIndex = index;
         saveVideoIndex(index);
-
         // Kiểm tra thời lượng video và thiết lập tốc độ tự động
         videoPlayer.onloadedmetadata = () => {
           const duration = videoPlayer.duration / 60; // Chuyển sang phút
           let defaultSpeed = getSavedPlaybackSpeed();
-          
           if (duration > 10 && defaultSpeed < 4) {
             defaultSpeed = 4;
           } else if (duration > 5 && defaultSpeed < 2) {
             defaultSpeed = 2;
           }
-          
           setPlaybackSpeed(defaultSpeed);
         };
-
         // Attempt to play the video
         const playPromise = videoPlayer.play();
         if (playPromise !== undefined) {
@@ -277,31 +267,26 @@
         }
       }
     }
-
     // Tải file CSV từ GitHub
-    fetch('https://dl.dropboxusercontent.com/scl/fi/jrsp4wt51ldr118yhjkn8/data3.txt?rlkey=60ecaxtax6u07hploelllf8vi&st=uartdnkz&dl=0')
-      .then(response => {
-        if (!response.ok) throw new Error('Failed to load CSV');
-        return response.text();
-      })
-      .then(data => {
-        videoList = parseCSV(data);
-        loading.style.display = 'none';
-        if (videoList.length > 0) {
-          currentVideoIndex = getLastVideoIndex();
-          if (currentVideoIndex >= videoList.length) {
-            currentVideoIndex = 0;
-          }
-          playVideo(currentVideoIndex);
-        } else {
-          loading.textContent = 'Không tìm thấy video trong danh sách';
+    fetch('https://dl.dropboxusercontent.com/scl/fi/jrsp4wt51ldr118yhjkn8/data3.txt?rlkey=60ecaxtax6u07hploelllf8vi&st=uartdnkz&dl=0').then(response => {
+      if (!response.ok) throw new Error('Failed to load CSV');
+      return response.text();
+    }).then(data => {
+      videoList = parseCSV(data);
+      loading.style.display = 'none';
+      if (videoList.length > 0) {
+        currentVideoIndex = getLastVideoIndex();
+        if (currentVideoIndex >= videoList.length) {
+          currentVideoIndex = 0;
         }
-      })
-      .catch(error => {
-        console.error('Lỗi tải CSV:', error);
-        loading.textContent = 'Lỗi tải danh sách video';
-      });
-
+        playVideo(currentVideoIndex);
+      } else {
+        loading.textContent = 'Không tìm thấy video trong danh sách';
+      }
+    }).catch(error => {
+      console.error('Lỗi tải CSV:', error);
+      loading.textContent = 'Lỗi tải danh sách video';
+    });
     // Chuyển đến video tiếp theo
     function nextVideo() {
       if (currentVideoIndex < videoList.length - 1) {
@@ -310,19 +295,16 @@
         playVideo(0);
       }
     }
-
     // Chuyển đến video trước đó
     function prevVideo() {
       if (currentVideoIndex > 0) {
         playVideo(currentVideoIndex - 1);
       }
     }
-
     // Tự động chuyển video khi kết thúc
     videoPlayer.addEventListener('ended', () => {
       nextVideo();
     });
-
     // Tùy chọn: Cuộn để chuyển video (giống TikTok)
     let touchStartY = 0;
     window.addEventListener('touchstart', (e) => {
