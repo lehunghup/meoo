@@ -250,7 +250,9 @@
         videoPlayer.onloadedmetadata = () => {
           const duration = videoPlayer.duration / 60; // Chuyển sang phút
           let defaultSpeed = getSavedPlaybackSpeed();
-          if (duration > 10 && defaultSpeed < 4) {
+          if (duration < 2) {
+            defaultSpeed = 1; // Video < 2 phút thì phát ở tốc độ 1x
+          } else if (duration > 10 && defaultSpeed < 4) {
             defaultSpeed = 4;
           } else if (duration > 5 && defaultSpeed < 2) {
             defaultSpeed = 2;
@@ -305,7 +307,7 @@
     videoPlayer.addEventListener('ended', () => {
       nextVideo();
     });
-    // Tùy chọn: Cuộn để chuyển video (giống TikTok)
+    // Tùy chọn: Cuộn để chuyển video (gi�似 TikTok)
     let touchStartY = 0;
     window.addEventListener('touchstart', (e) => {
       touchStartY = e.touches[0].clientY;
